@@ -1,0 +1,8 @@
+{
+  // Cloudflare Worker that serves the static Lilah site in ./public
+  "name": "justin",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./public"
+  }
+}
