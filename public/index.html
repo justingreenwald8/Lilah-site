@@ -91,11 +91,40 @@
   .head h2{font-size:clamp(34px,4.2vw,52px);margin-top:14px}
   .head p{font-size:20px;color:var(--muted);margin-top:16px}
 
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  .step{background:#fff;border:1px solid var(--line);border-radius:24px;padding:34px 30px}
-  .num{width:44px;height:44px;border-radius:50%;background:var(--forest);color:#fff;font:600 19px Outfit,sans-serif;display:grid;place-items:center}
-  .step h3{font-size:25px;margin:22px 0 10px}
-  .step p{color:var(--muted);font-size:17px}
+  /* ride tracker */
+  .track{position:relative}
+  .track-rail,.track-fill{position:absolute;top:27px;left:10%;height:4px;border-radius:4px}
+  .track-rail{right:10%;background:var(--line)}
+  .track-fill{width:0;background:var(--forest);transition:width .6s ease}
+  .track-nodes{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+  .tnode{display:flex;flex-direction:column;align-items:center;gap:10px;border:0;background:none;padding:0;cursor:pointer;font:inherit;color:inherit;min-height:44px}
+  .tdot{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:#fff;border:2px solid var(--line);transition:all .35s}
+  .tdot svg{width:24px;height:24px;stroke:#8A958F;transition:stroke .35s}
+  .tlabel{font-weight:600;font-size:16px;color:#8A958F;transition:color .3s;text-align:center}
+  .ttime{font-size:13px;color:var(--muted)}
+  .tnode.done .tdot{background:var(--forest);border:3px solid var(--paper)}
+  .tnode.done .tdot svg{stroke:#fff}
+  .tnode.done .tlabel,.tnode.cur .tlabel{color:var(--forest)}
+  .tnode.cur .tdot{background:var(--leaf);border:3px solid var(--paper);animation:tring 1.6s ease-out infinite}
+  .tnode.cur .tdot svg{stroke:var(--forest)}
+  .tnode.cur .tlabel{font-weight:700}
+  .tnode:focus-visible .tdot{outline:3px solid var(--forest-2);outline-offset:3px}
+  @keyframes tring{0%{box-shadow:0 0 0 0 rgba(133,205,117,.7)}100%{box-shadow:0 0 0 16px rgba(133,205,117,0)}}
+  .tcards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;margin-top:44px}
+  .tcard{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px 32px;display:flex;flex-direction:column;gap:12px}
+  .tcard.dark{background:var(--forest);border-color:var(--forest);color:#fff;gap:14px}
+  .tcap{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--forest-2)}
+  .tcard.dark .tcap{color:var(--leaf)}
+  .tcard h3{font-size:28px;margin:0}
+  .tcard p{color:var(--muted);font-size:17px}
+  .tsms{background:#fff;color:var(--ink);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+  .tsms-ic{flex:none;width:36px;height:36px;border-radius:10px;background:var(--mint);display:grid;place-items:center}
+  .tsms-ic svg{width:18px;height:18px}
+  .tsms b{display:block;font-size:13px;color:var(--forest)}
+  .tsms div span{font-size:16px;line-height:1.45}
+  .tfoot{font-size:14px;color:rgba(255,255,255,.75)}
+  .tcards.swap .tcard{animation:trise .5s ease both}
+  @keyframes trise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
   /* feature rows */
   .feature{display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:center}
@@ -169,7 +198,7 @@
     .hero-grid,.feature,.final-grid,.faq-grid,.soon-band{grid-template-columns:1fr}
     .feature.flip .f-media{order:0}
     .feature{gap:56px}
-    .steps{grid-template-columns:1fr}
+    .tcards{grid-template-columns:1fr}
     .strip-in{grid-template-columns:1fr 1fr}
     .links a:not(.btn){display:none}
     .f1{left:12px}.f2{right:12px}
@@ -177,6 +206,13 @@
     .soon-band{padding:48px 28px}
     section{padding:80px 0}
   }
+  @media (max-width:560px){
+    .tdot{width:44px;height:44px}.tdot svg{width:20px;height:20px}
+    .track-rail,.track-fill{top:20px}
+    .tlabel{font-size:12.5px}.ttime{display:none}
+    .tcard{padding:24px}.tcard h3{font-size:23px}
+  }
+  @media (prefers-reduced-motion:reduce){.tnode.cur .tdot,.tcards.swap .tcard{animation:none}.track-fill{transition:none}}
   @media (max-width:560px){
     .wrap{padding:0 16px}
     .hero{padding:32px 0 64px}
@@ -264,13 +300,36 @@
   <div class="wrap">
     <div class="head center reveal">
       <span class="kicker">How it works</span>
-      <h2>If they can call or text, they can use Lilah.</h2>
-      <p>Set it up once together. After that, your parent just calls or texts whenever they need something.</p>
+      <h2>From one text to home safe.</h2>
+      <p>Set it up once together. After that, every ride looks like this, for your parent and for you.</p>
     </div>
-    <div class="steps">
-      <div class="step reveal"><div class="num">1</div><h3>Tell us about them, once</h3><p>Their address, favorite pharmacy, the walker, the side door, who in the family to update. You only explain it one time.</p></div>
-      <div class="step reveal"><div class="num">2</div><h3>They call or text Lilah</h3><p>"I need a ride to the dentist Tuesday." Plain words, any time of day, by voice or by text. Lilah confirms every detail.</p></div>
-      <div class="step reveal"><div class="num">3</div><h3>It gets handled</h3><p>Lilah books it, follows up and texts the family when it's done, so nobody has to chase anyone.</p></div>
+    <div class="tracker reveal" id="tracker">
+      <div class="track">
+        <div class="track-rail"></div>
+        <div class="track-fill" id="trackFill"></div>
+        <div class="track-nodes">
+        <button type="button" class="tnode cur" data-i="0" aria-pressed="true"><span class="tdot"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="tlabel">Mom asks</span><span class="ttime">Tue 9:02 AM</span></button>
+        <button type="button" class="tnode" data-i="1" aria-pressed="false"><span class="tdot"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4"/></svg></span><span class="tlabel">Booked</span><span class="ttime">Tue 9:03 AM</span></button>
+        <button type="button" class="tnode" data-i="2" aria-pressed="false"><span class="tdot"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M6 17l1.5-6h9L18 17"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg></span><span class="tlabel">On the way</span><span class="ttime">Thu 1:12 PM</span></button>
+        <button type="button" class="tnode" data-i="3" aria-pressed="false"><span class="tdot"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg></span><span class="tlabel">Picked up</span><span class="ttime">Thu 1:20 PM</span></button>
+        <button type="button" class="tnode" data-i="4" aria-pressed="false"><span class="tdot"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg></span><span class="tlabel">Home safe</span><span class="ttime">Thu 3:55 PM</span></button>
+        </div>
+      </div>
+      <div class="tcards" aria-live="polite">
+        <div class="tcard">
+          <span class="tcap">Mom's side · <span id="tTime">Tue 9:02 AM</span></span>
+          <h3 id="tTitle">Mom texts Lilah</h3>
+          <p id="tDetail">“Can you get me to Dr. Patel on Thursday at 2?” No app, no typing addresses. Calling works too.</p>
+        </div>
+        <div class="tcard dark">
+          <span class="tcap">Your phone</span>
+          <div class="tsms">
+            <span class="tsms-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#0E492A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+            <div><b>Text from Lilah</b><span id="tFam">Mom asked Lilah for a ride to Dr. Patel on Thursday. Booking it now.</span></div>
+          </div>
+          <span class="tfoot">Every update, without calling around.</span>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -436,6 +495,41 @@
       }
     });
   });
+  // ---- ride tracker ----
+  (() => {
+    const T = [
+      { time:'Tue 9:02 AM', title:'Mom texts Lilah', detail:'“Can you get me to Dr. Patel on Thursday at 2?” No app, no typing addresses. Calling works too.', fam:'Mom asked Lilah for a ride to Dr. Patel on Thursday. Booking it now.' },
+      { time:'Tue 9:03 AM', title:'Booked there and back', detail:'Pickup Thursday at 1:20 from the side door, with the ride home already set for after the visit.', fam:'Mom’s ride to Dr. Patel is booked for Thursday at 1:20pm.' },
+      { time:'Thu 1:12 PM', title:'A driver who already knows her', detail:'Marcus, gray Toyota Camry. He knows Ruth uses a walker and needs a little extra time.', fam:'Marcus is on the way to pick up Mom. Gray Toyota Camry.' },
+      { time:'Thu 1:20 PM', title:'A call when the car pulls up', detail:'“Hi Ruth, Marcus is outside at your side door.” No hunting for a license plate.', fam:'Mom was picked up at 1:21. She’ll arrive around 1:45.' },
+      { time:'Thu 3:55 PM', title:'Home safe', detail:'The ride home ran on schedule. Nothing for anyone to chase.', fam:'Mom is home safe. Both rides are done.' }
+    ];
+    const root = document.getElementById('tracker'); if (!root) return;
+    const nodes = [...root.querySelectorAll('.tnode')];
+    const fill = document.getElementById('trackFill');
+    const cards = root.querySelector('.tcards');
+    const el = id => document.getElementById(id);
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let step = 0, timer = null;
+    function show(i){
+      step = i;
+      nodes.forEach((n, k) => {
+        n.classList.toggle('done', k < i); n.classList.toggle('cur', k === i);
+        n.setAttribute('aria-pressed', k === i ? 'true' : 'false');
+      });
+      fill.style.width = `calc(80% * ${i / (T.length - 1)})`;
+      const d = T[i];
+      el('tTime').textContent = d.time; el('tTitle').textContent = d.title;
+      el('tDetail').textContent = d.detail; el('tFam').textContent = d.fam;
+      cards.classList.remove('swap'); void cards.offsetWidth; cards.classList.add('swap');
+    }
+    function play(){ if (still) return; clearInterval(timer); timer = setInterval(() => show((step + 1) % T.length), 2800); }
+    function stop(){ clearInterval(timer); timer = null; }
+    nodes.forEach((n, k) => n.addEventListener('click', () => { show(k); play(); }));
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { if (!timer) { show(0); play(); } } else stop();
+    }), { threshold: .35 }).observe(root);
+  })();
 </script>
 </body>
 </html>
