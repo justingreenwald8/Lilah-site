@@ -318,7 +318,8 @@
         <li><span class="tick"><svg viewBox="0 0 14 14" fill="none" stroke="#0E492A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 7.5l3 3 6-7"/></svg></span>You get a text when it's handled</li>
       </ul>
 
-      <form class="waitlist" id="join" novalidate>
+      <form class="waitlist" id="join" data-form="top" novalidate>
+        <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <div class="row">
           <input type="email" name="email" placeholder="Your email address" required aria-label="Email address">
           <button class="btn" type="submit">Join the waitlist</button>
@@ -523,7 +524,8 @@
     <div class="reveal">
       <h2>Make life at home a little easier, for everyone.</h2>
       <p class="sub">Join the waitlist and we'll let you know as soon as Lilah launches in your area.</p>
-      <form class="waitlist" novalidate>
+      <form class="waitlist" data-form="bottom" novalidate>
+        <input type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <div class="row">
           <input type="email" name="email" placeholder="Your email address" required aria-label="Email address">
           <button class="btn leaf" type="submit">Join the waitlist</button>
@@ -553,7 +555,7 @@
 
 <script>
   // ---- WAITLIST SETUP ----
-  // Paste your Formspree endpoint here (e.g. "https://formspree.io/f/abcdwxyz").
+  // Google Sheet web app URL (ends in /exec). Signups are added as rows in the sheet.
   // If left blank, signups fall back to opening an email to hello@joinlilah.com.
   const FORM_ENDPOINT = "";
 
@@ -570,8 +572,9 @@
       e.preventDefault();
       const email = form.email.value.trim();
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { form.email.focus(); form.email.style.borderColor = '#C0533A'; return; }
-      const data = { email, signing_up_for: form.for.value, zip: form.zip.value.trim() };
-      const btn = form.querySelector('button'); const label = btn.textContent;
+      const data = { email, signing_up_for: form.for.value, zip: form.zip.value.trim(),
+                     form: form.dataset.form || '', page: location.href, company: form.company ? form.company.value : '' };
+      const btn = form.querySelector('button[type="submit"]'); const label = btn.textContent;
       btn.disabled = true; btn.textContent = 'Joining…';
 
       if (!FORM_ENDPOINT) {
@@ -581,8 +584,8 @@
         return;
       }
       try {
-        const r = await fetch(FORM_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json','Accept':'application/json'}, body: JSON.stringify(data) });
-        if (!r.ok) throw new Error();
+        // Google Apps Script doesn't send CORS headers, so post as a simple form request.
+        await fetch(FORM_ENDPOINT, { method: 'POST', mode: 'no-cors', body: new URLSearchParams(data) });
         form.querySelectorAll('.row, .fine').forEach(el => el.style.display = 'none');
         form.querySelector('.thanks').style.display = 'block';
       } catch {
