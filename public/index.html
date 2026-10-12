@@ -20,7 +20,6 @@
     --max:1180px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
   body{background:var(--paper);color:var(--ink);font-family:Figtree,system-ui,sans-serif;font-size:18px;line-height:1.6;-webkit-font-smoothing:antialiased}
   h1,h2,h3{font-family:Outfit,system-ui,sans-serif;font-weight:600;line-height:1.08;letter-spacing:-.02em;color:var(--forest)}
   img{display:block;max-width:100%}
@@ -593,6 +592,33 @@
       }
     });
   });
+  // ---- in-page links: land each section centered below the sticky nav ----
+  (() => {
+    const navH = () => document.getElementById('nav').offsetHeight;
+    const absTop = el => { let y = 0; for (; el; el = el.offsetParent) y += el.offsetTop; return y; };  // ignores reveal transforms
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function targetY(id){
+      const t = document.getElementById(id); if (!t) return null;
+      const nav = navH(), avail = innerHeight - nav;
+      if (id === 'how') return absTop(document.getElementById('tscroll')) - nav;          // start of the pinned ride tracker
+      const box = id === 'rides' ? (t.querySelector('.feature') || t) : t;              // the content, not the section padding
+      const h = box.offsetHeight;
+      const gap = h < avail ? (avail - h) / 2 : 24;                                       // center if it fits, else small top gap
+      return Math.max(0, absTop(box) - nav - gap);
+    }
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      const id = a.getAttribute('href').slice(1);
+      a.addEventListener('click', e => {
+        if (!id) { e.preventDefault(); scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' }); return; }
+        const y = targetY(id); if (y === null) return;
+        e.preventDefault();
+        history.pushState(null, '', '#' + id);
+        scrollTo({ top: y, behavior: still ? 'auto' : 'smooth' });
+        if (id === 'join') setTimeout(() => { const f = document.querySelector('#join input[name=email]'); if (f) f.focus({ preventScroll: true }); }, still ? 0 : 600);
+      });
+    });
+    if (location.hash) addEventListener('load', () => { const y = targetY(location.hash.slice(1)); if (y !== null) scrollTo(0, y); });
+  })();
   // ---- ride tracker ----
   (() => {
     const T = [
